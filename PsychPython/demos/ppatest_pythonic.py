@@ -9,18 +9,18 @@
 # (c) 2019 Jon Peirce - Licensed under MIT license.
 # (c) 2018 Mario Kleiner - Licensed under MIT license.
 
-from psychtoolbox import audio, hid
-from psychtoolbox import GetSecs, WaitSecs  # not yet "Pythonic"
 from math import *
-import numpy as np
 
+import numpy as np
+from psychtoolbox import GetSecs, WaitSecs, audio  # not yet "Pythonic"
 
 # from soundfile import SoundFile
+
 
 def printstatus(stream):
     info = stream.status
     print(info)
-    return (info['Active'])
+    return info["Active"]
 
 
 def run():
@@ -49,23 +49,31 @@ def run():
         a = np.sin(np.linspace(0, 2 * pi * f * n_samples, n_samples))
         # Replicated into two rows - One row for each stereo-channel, ie.
         # m'th row == m'th channel, n'th column = n'th sample frame:
-        stereowav = np.array([a, a], order='f').transpose().astype('float32')
+        stereowav = np.array([a, a], order="f").transpose().astype("float32")
     else:
         # Make it less boring:
-        fname = '/home/kleinerm/Music/test.wav'
+        fname = "/home/kleinerm/Music/test.wav"
         myfile = SoundFile(fname)
-        stereowav = myfile.read(dtype='float32', always_2d=True)
+        stereowav = myfile.read(dtype="float32", always_2d=True)
         # stereowav = myfile.read()
         myfile.close()
 
-    print('Type', type(stereowav), 'Shape', stereowav.shape, 'Datatype',
-          stereowav.dtype, 'Order', stereowav.flags)
+    print(
+        "Type",
+        type(stereowav),
+        "Shape",
+        stereowav.shape,
+        "Datatype",
+        stereowav.dtype,
+        "Order",
+        stereowav.flags,
+    )
 
     t1 = GetSecs()
     stream.fill_buffer(stereowav)  # PsychPortAudio('FillBuffer', pahandle, stereowav);
     t2 = GetSecs()
-    d1 = (1000 * (t2 - t1))
-    print('FillBuffer Duration', d1, ' msecs.')
+    d1 = 1000 * (t2 - t1)
+    print("FillBuffer Duration", d1, " msecs.")
 
     # Start playback for one repetition (1), 1 seconds from now, wait for onset:
     stream.start(repetitions=1, when=GetSecs() + 1, wait_for_start=1)
@@ -75,39 +83,39 @@ def run():
     # is active:
 
     info = stream.status
-    print(info, ' Spec ', info['Active'])
+    print(info, " Spec ", info["Active"])
     while printstatus(stream):
-        WaitSecs('YieldSecs', 1)  # didn't write a pythonic wrapper yet
+        WaitSecs("YieldSecs", 1)  # didn't write a pythonic wrapper yet
 
     # Wait for sound to stop by itself, block until then:
     startTime, endPositionSecs, xruns, estStopTime = stream.stop()
-    print('StartTime', startTime, 'secs. Stop time', estStopTime, 'secs.\n');
-
+    print("StartTime", startTime, "secs. Stop time", estStopTime, "secs.\n")
     # as before but 1.5*note_freq
-    a = np.sin(np.linspace(0, 2 * pi * f*1.5 * n_samples, n_samples))
+    a = np.sin(np.linspace(0, 2 * pi * f * 1.5 * n_samples, n_samples))
     # Replicated into two rows - One row for each stereo-channel, ie.
     # m'th row == m'th channel, n'th column = n'th sample frame:
-    stereowav2 = np.array([a, a], order='f').transpose().astype('float32')
+    stereowav2 = np.array([a, a], order="f").transpose().astype("float32")
 
     t1 = GetSecs()
 
-    b1 = audio.Buffer(stream=stream, data=stereowav2)  # PsychPortAudio('CreateBuffer', pahandle, stereowav2);
+    b1 = audio.Buffer(
+        stream=stream, data=stereowav2
+    )  # PsychPortAudio('CreateBuffer', pahandle, stereowav2);
     t2 = GetSecs()
-    d2 = (1000 * (t2 - t1))
-    print('CreateBuffer Duration', d2, ' msecs.')
+    d2 = 1000 * (t2 - t1)
+    print("CreateBuffer Duration", d2, " msecs.")
     t1 = GetSecs()
     b1.fill_buffer(stereowav2)  # PsychPortAudio('FillBuffer', pahandle, b1)
     t2 = GetSecs()
-    print('FillBuffer Duration', (1000 * (t2 - t1)), ' msecs.')
-    print('d2 / d1 = ', d2 / d1)
+    print("FillBuffer Duration", (1000 * (t2 - t1)), " msecs.")
+    print("d2 / d1 = ", d2 / d1)
 
     # PsychPortAudio('Start', pahandle, 1, GetSecs() + 1, 1)
-    stream.start(when=GetSecs()+1, wait_for_start=1)
-    WaitSecs('YieldSecs', 2)
+    stream.start(when=GetSecs() + 1, wait_for_start=1)
+    WaitSecs("YieldSecs", 2)
     # [startTime, endPositionSecs, xruns, estStopTime] = PsychPortAudio('Stop', pahandle, 1);
     startTime, endPositionSecs, xruns, estStopTime = stream.stop()
-    print('StartTime', startTime, 'secs.xx Stop time', estStopTime, 'secs.\n');
-
+    print("StartTime", startTime, "secs.xx Stop time", estStopTime, "secs.\n")
     # Close sound device:
     stream.close()  # PsychPortAudio('Close', pahandle);
     #
@@ -158,5 +166,6 @@ def run():
     # # Close sound device:
     # playback.close()  # PsychPortAudio('Close', pahandle);
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     run()

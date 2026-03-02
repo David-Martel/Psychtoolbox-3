@@ -15,13 +15,13 @@
 
 from wheel.bdist_wheel import bdist_wheel
 
+
 # derived from:
 # https://github.com/joerick/python-abi3-package-sample/blob/7f05b22b9e0cfb4e60293bc85252e95278a80720/setup.py#L5
 class abi3_wheel(bdist_wheel):
-
     def get_tag(self):
         py, abi, plat = super().get_tag()
-        if py.startswith('cp'):
+        if py.startswith("cp"):
             # We support the limited API, compatible back to 3.7
-            return 'cp37', 'abi3', plat
+            return "cp37", "abi3", plat
         return py, abi, plat

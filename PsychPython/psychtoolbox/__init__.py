@@ -10,11 +10,11 @@
 # Copyright (c) 2018 Mario Kleiner. Licensed under MIT license.
 #
 
-from ._version import __version__
 import sys
+
+from ._version import __version__
+
 is_64bits = sys.maxsize > 2**32
-
-
 
 
 # Import all PTB modules already ported to Python extension modules:
@@ -23,10 +23,11 @@ is_64bits = sys.maxsize > 2**32
 # This will cause the function handles to shadow the original module, so
 # now the module can be called with (almost) identical syntax as one is
 # used to from Octave or Matlab:
-from .WaitSecs import WaitSecs
 from .GetSecs import GetSecs
-from .PsychHID import PsychHID
 from .IOPort import IOPort
+from .PsychHID import PsychHID
+from .WaitSecs import WaitSecs
+
 if is_64bits:
     from .PsychPortAudio import PsychPortAudio
 else:

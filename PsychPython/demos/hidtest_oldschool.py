@@ -13,47 +13,44 @@
 
 from psychtoolbox import *
 
+
 def run():
-
     # KbQueueTest
-    WaitSecs('YieldSecs', 1);
-    keys = [1] * 256;
-    PsychHID('KbQueueCreate', [], keys);
-    PsychHID('KbQueueStart');
-    PsychHID('Keyboardhelper', -12);
-    WaitSecs('YieldSecs', 5);
-    PsychHID('KbQueueStop');
-    PsychHID('Keyboardhelper', -10);
-    while PsychHID('KbQueueFlush', [], 0):
-        evt = PsychHID('KbQueueGetEvent');
-        print(evt);
+    WaitSecs("YieldSecs", 1)
+    keys = [1] * 256
+    PsychHID("KbQueueCreate", [], keys)
+    PsychHID("KbQueueStart")
+    PsychHID("Keyboardhelper", -12)
+    WaitSecs("YieldSecs", 5)
+    PsychHID("KbQueueStop")
+    PsychHID("Keyboardhelper", -10)
+    while PsychHID("KbQueueFlush", [], 0):
+        evt = PsychHID("KbQueueGetEvent")
+        print(evt)
 
-    PsychHID('KbQueueRelease');
-    return;
-
+    PsychHID("KbQueueRelease")
+    return
     # USB HID reports test:
-    #hiddevs = PsychHID('Devices')
-    mouseIndex = 5;
-    wheelDelta = 0;
-    WaitSecs('YieldSecs', 1);
+    # hiddevs = PsychHID('Devices')
+    mouseIndex = 5
+    wheelDelta = 0
+    WaitSecs("YieldSecs", 1)
+    options = dict()
+    options["print"] = 0
+    err = PsychHID("ReceiveReports", mouseIndex, options)
+    print(err)
+    while not PsychHID("KbCheck")[0]:
+        rep = PsychHID("GetReport", mouseIndex, 1, 0, 5)
+        print(rep)
+        WaitSecs("YieldSecs", 1)
 
-    options = dict();
-    options['print'] = 0;
-    err = PsychHID('ReceiveReports', mouseIndex, options);
-    print(err);
+    err = PsychHID("ReceiveReportsStop", mouseIndex)
+    print(err)
+    print("\n\nNow all the other remaining ones:\n\n")
+    [rep, errs] = PsychHID("GiveMeReports", mouseIndex)
+    print(errs)
+    print("\n\nReports:\n\n")
+    print(rep)
 
-    while not PsychHID('KbCheck')[0]:
-        rep = PsychHID('GetReport', mouseIndex, 1, 0, 5);
-        print(rep);
-        WaitSecs('YieldSecs', 1);
-
-    err = PsychHID('ReceiveReportsStop', mouseIndex)
-    print(err);
-
-    print('\n\nNow all the other remaining ones:\n\n');
-    [rep, errs] = PsychHID('GiveMeReports', mouseIndex);
-    print(errs);
-    print('\n\nReports:\n\n');
-    print(rep);
 
 run()
