@@ -100,6 +100,12 @@ function [T_quantalAbsorptionsNormalized,T_quantalAbsorptions,T_quantalIsomeriza
 %                                     in line 216 of ComputeRawConeFundamentals if params.DORODS is true.
 %    adjIndDiffParams.absorbance - Photopigment absorbance as given in line 188 of ComputeRawConeFundamentals
 %    adjIndDiffParams.absorptance - Photopigment absorptance as given in line 230 of ComputeRawConeFundamentals
+%    adjIndDiffParams.photopigmentQuantalEfficiency - Photopigment quantal efficiency as passed to ComptuteRawConeFundamentals.
+%                                     We have this here in staticParams,
+%                                     but useful to have in adjIndDiffParams as
+%                                     well, sometimes.
+%   adjIndDiffParams.ISdiameter - Inner segment diameter estimate (in microns), taken from
+%                                    FillInPhotoreceptors return structure.
 %
 % For both adjIndDiffParams.mac and adjIndDiffParams.lens, the wavelength
 % spacing is the same as in the S input variable of this function.
@@ -253,6 +259,12 @@ if (SET_ABSORBANCE)
     params.absorbance = photoreceptors.absorbance;
 end
 
+% Sometimes, we want to know things about how all the pieces came together.
+% So we tuck awaay the photoreceptors structure, which has a lot of
+% information in it.  We put this in a substructure just to make sure we
+% don't collide in some structure name space somewhere else.
+params.info.photoreceptors = photoreceptors;
+
 %% Set up for call into the low level routine that computes the CIE fundamentals.
 staticParams.S = photoreceptors.nomogram.S;
 staticParams.fieldSizeDegrees = photoreceptors.fieldSizeDegrees;
@@ -290,6 +302,7 @@ end
 % See comment in ComputeRawConeFundamentals about the fact that
 % we ought to unify this routine and what FillInPhotoreceptors does.
 [T_quantalAbsorptionsNormalized,T_quantalAbsorptions,T_quantalIsomerizations,adjIndDiffParams] = ComputeRawConeFundamentals(params,staticParams);
+adjIndDiffParams.ISdiameter = photoreceptors.ISdiameter.value;
 
 %% A little reality check.
 %
